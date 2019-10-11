@@ -4,6 +4,8 @@ import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import WorkoutDisplay from './WorkoutDisplay.js'
 import Box from '@material-ui/core/Box'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
 
 class Timer extends React.Component {
@@ -12,7 +14,7 @@ class Timer extends React.Component {
     this.state = {
       running: false,
 
-      work: '6',
+      hang: '6',
       rest: '6',
       reps: '6',
       sets: '6',
@@ -43,7 +45,7 @@ class Timer extends React.Component {
     const renderInputs = (fields) => (
       fields.map(([label, value, changeFn], i) =>
         <TextField
-          id="outlined-number"
+          id="input-number"
           label={label}
           key={label}
           value={value}
@@ -51,7 +53,6 @@ class Timer extends React.Component {
           type="number"
           InputLabelProps={{shrink: true}}
           margin="normal"
-          variant="outlined"
         />
       )
     )
@@ -61,7 +62,7 @@ class Timer extends React.Component {
         <Box>
           {
             renderInputs([
-              ['Work', this.state.work, this.handleChange('work')],
+              ['Hang', this.state.hang, this.handleChange('hang')],
               ['Rest', this.state.rest, this.handleChange('rest')],
               ['Reps', this.state.reps, this.handleChange('reps')],
               ['Sets', this.state.sets, this.handleChange('sets')],
@@ -69,14 +70,6 @@ class Timer extends React.Component {
             ])
           }
         </Box>
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth="true"
-          onClick={this.start}
-        >
-          Start
-        </Button>
       </Box>
     )
   }
@@ -85,22 +78,12 @@ class Timer extends React.Component {
     return (
       <Box>
         <WorkoutDisplay
-          work={parseInt(this.state.work)}
+          hang={parseInt(this.state.hang)}
           rest={parseInt(this.state.rest)}
           reps={parseInt(this.state.reps)}
           sets={parseInt(this.state.sets)}
           restBetweenSets={parseInt(this.state.restBetweenSets)}
         />
-        <Box>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth="true"
-            onClick={this.stop}
-          >
-            Stop
-          </Button>
-        </Box>
       </Box>
     )
   }
@@ -108,14 +91,19 @@ class Timer extends React.Component {
   render() {
     return (
       <Box>
-        <Box>
-          <Typography variant="h6" component="h6">
-            Hangboard Repeaters
-          </Typography>
-        </Box>
-        <hr/>
-        <Box>
-          {this.state.running ? this.renderRunning() : this.renderStopped()}
+        <Box style={{padding: '6px'}}>
+          <Box>
+            {this.state.running ? this.renderRunning() : this.renderStopped()}
+          </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth={true}
+            onClick={this.state.running ? this.stop : this.start}
+            style={{marginTop: '6px'}}
+          >
+            {this.state.running ? 'Stop' : 'Start'}
+          </Button>
         </Box>
       </Box>
     )

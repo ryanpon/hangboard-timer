@@ -18,7 +18,7 @@ class WorkoutDisplay extends React.Component {
     }
     this.timerID = setInterval(
       () => this.tick(),
-      100
+      50
     )
   }
 
@@ -28,20 +28,21 @@ class WorkoutDisplay extends React.Component {
 
   setList() {
     // excludes last rest as this will be included in rest between sets
-    const format = _(this.props.reps)
-      .range()
-      .flatMap(repetition =>
-        [[repetition, 'work', this.props.work],
-         [repetition, 'rest', this.props.rest]]
-      )
-      .dropRight() // excludes last rest
-      .value()
-
+    const format = [[0, 'hang', this.props.hang]].concat(
+      _(this.props.reps - 1)
+        .range()
+        .flatMap(repetition =>
+          [[repetition + 1, 'rest', this.props.rest],
+           [repetition + 1, 'hang', this.props.hang]]
+        )
+        .value()
+    )
+    console.log(format)
     const sets = this.props.sets
     return _.range(sets).map(set =>
       ({
-        totalLength: _.sum(format.map(f => f[2])) + (sets === (set - 1) ? 0 : this.props.restBetweenSets),
-        format: format.concat([[-1, 'set rest', this.props.restBetweenSets]])
+        totalLength: _.sum(format.map(f => f[2])) + (set === 0 ? 0 : this.props.restBetweenSets),
+        format: (set === 0 ? [] : [[-1, 'set rest', this.props.restBetweenSets]]).concat(format)
       })
     )
   }
@@ -58,7 +59,7 @@ class WorkoutDisplay extends React.Component {
 
     const delay = 5
     if (sinceStart < delay) {
-      return [0, 'ready', 0, delay - sinceStart]
+      return [0, 'ready', 0, delay - (millisecondsSinceStart / 1000)]
     }
 
     const sinceReady = sinceStart - delay
@@ -116,25 +117,32 @@ class WorkoutDisplay extends React.Component {
       </Grid>
     )
 
+    const setRepFragment = (
+      <Grid container spacing={1} style={{flexGrow: 1}}>
+        {
+          [
+            ['Set', `${set + 1}/${this.props.sets}`],
+            ['Rep', type === 'set rest' ? '--' : `${rep + 1}/${this.props.reps}`],
+          ].map(renderCardGrid)
+        }
+      </Grid>
+    )
+
+    const timerFragment = (
+      <Grid container spacing={1} style={{flexGrow: 1}}>
+        {
+          [
+            ['Type', type === 'ready' ? 'Get Ready!' : type],
+            ['Remaining', remaining.toFixed(1)],
+          ].map(renderCardGrid)
+        }
+      </Grid>
+    )
+
     return (
-      <Box style={{padding: '6px'}}>
-        <Grid container spacing={1} style={{flexGrow: 1}}>
-          {
-            [
-              ['Set', `${set + 1}/${this.props.sets}`],
-              ['Rep', type === 'set rest' ? '--' : `${rep + 1}/${this.props.reps}`],
-            ].map(renderCardGrid)
-          }
-        </Grid>
-        <Grid container spacing={1}>
-          {
-            [
-              ['Type', type],
-              ['Remaining', remaining.toFixed(1)],
-            ].map(renderCardGrid)
-          }
-        </Grid>
-        {type === 'ready' ? <h2>Get ready! {remaining}...</h2> : null}
+      <Box>
+        {setRepFragment}
+        {timerFragment}
       </Box>
     )
   }
