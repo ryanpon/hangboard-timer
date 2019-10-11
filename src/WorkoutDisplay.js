@@ -56,7 +56,7 @@ class WorkoutDisplay extends React.Component {
     const sinceStart = Math.floor(millisecondsSinceStart / 1000)
     if (sinceStart < 0) { throw new Error('wtf') }
 
-    const delay = 1
+    const delay = 5
     if (sinceStart < delay) {
       return [0, 'ready', 0, delay - sinceStart]
     }
