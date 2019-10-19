@@ -96,20 +96,20 @@ class WorkoutDisplay extends React.Component {
     const [set, type, rep, remaining] = this.diff()
     if (type === 'done') {
       return (
-        <Typography variant="h5" component="h2">
+        <Typography variant="h5">
           Done
         </Typography>
       )
     }
 
-    const renderCardGrid = ([label, data], _, arr) => (
+    const renderCardGrid = ([label, data, variant, color], _, arr) => (
       <Grid item key={label} xs={12 / arr.length}>
         <Card >
           <CardContent>
             <Typography color="textSecondary" gutterBottom>
               {label}
             </Typography>
-            <Typography variant="h5" component="h2">
+            <Typography variant={variant} style={{color: color}}>
               {data}
             </Typography>
           </CardContent>
@@ -121,19 +121,28 @@ class WorkoutDisplay extends React.Component {
       <Grid container spacing={1} style={{flexGrow: 1}}>
         {
           [
-            ['Set', `${set + 1}/${this.props.sets}`],
-            ['Rep', type === 'set rest' ? '--' : `${rep + 1}/${this.props.reps}`],
+            ['Set', `${set + 1}/${this.props.sets}`, 'h5'],
+            ['Rep', type === 'set rest' ? '--' : `${rep + 1}/${this.props.reps}`, 'h5'],
           ].map(renderCardGrid)
         }
       </Grid>
     )
 
+    const red    = '#FD3C34'
+    const yellow = '#D7B857'
+    const green  = '#608761'
+    const typeToColor = {
+      ready: yellow,
+      rest: red,
+      hang: green,
+      'set rest': red
+    }
     const timerFragment = (
       <Grid container spacing={1} style={{flexGrow: 1}}>
         {
           [
-            ['Type', type === 'ready' ? 'Get Ready!' : type],
-            ['Remaining', remaining.toFixed(1)],
+            ['Type', type === 'ready' ? 'Get Ready!' : type, 'h3', typeToColor[type]],
+            ['Remaining', remaining.toFixed(1), 'h3'],
           ].map(renderCardGrid)
         }
       </Grid>
